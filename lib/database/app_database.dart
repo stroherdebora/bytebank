@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 Future<Database> createDatabase() {
   return getDatabasesPath().then((dbPath) {
     final String path = join(dbPath, 'bytebank.db');
+    // deleteDatabase(path);
     return openDatabase(path, onCreate: (db, version) {
       db.execute('CREATE TABLE contacts('
           'id INTEGER PRIMARY KEY, '
