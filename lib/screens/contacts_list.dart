@@ -30,7 +30,6 @@ class _ContactsListState extends State<ContactsList> {
 
             case ConnectionState.waiting:
               return Progress();
-              break;
 
             case ConnectionState.active:
               break;
@@ -44,7 +43,6 @@ class _ContactsListState extends State<ContactsList> {
                 },
                 itemCount: contacts.length,
               );
-              break;
           }
 
           return Text('Unkown error');

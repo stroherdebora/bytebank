@@ -17,10 +17,13 @@ class TransactionsList extends StatelessWidget {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
               break;
+
             case ConnectionState.waiting:
               return Progress();
+
             case ConnectionState.active:
               break;
+
             case ConnectionState.done:
               if (snapshot.hasData) {
                 final List<Transaction>? transactions = snapshot.data;
