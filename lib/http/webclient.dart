@@ -30,7 +30,7 @@ final Client client = InterceptedClient.build(
 );
 
 Future<List<Transaction>> findAll() async {
-  final Response response = await client.get(Uri.http('192.168.13.107:8080', 'transactions'));
+  final Response response = await client.get(Uri.http('192.168.13.122:8080', 'transactions'));
 
   final List<dynamic> decodedJson = jsonDecode(response.body);
   final List<Transaction> transactions = [];
@@ -49,7 +49,7 @@ Future<List<Transaction>> findAll() async {
   return transactions;
 }
 
-void save(Transaction transaction) async {
+Future<Transaction> save(Transaction transaction) async {
   final Map<String, dynamic> transactionMap = {
     'value': transaction.value,
     'contact': {'name': transaction.contact.name, 'accountNumber': transaction.contact.accountNumber}
@@ -57,12 +57,21 @@ void save(Transaction transaction) async {
 
   final String transactionJson = jsonEncode(transactionMap);
 
-  final Response response = await client.post(Uri.http('192.168.13.107:8080', 'transactions'),
+  final Response response = await client.post(Uri.http('192.168.13.122:8080', 'transactions'),
       headers: {
         'Content-type': 'application/json',
         'password': '1000',
       },
       body: transactionJson);
 
-  jsonDecode(response.body);
+  Map<String, dynamic> json = jsonDecode(response.body);
+  final Map<String, dynamic> contactJson = json['contact'];
+  return Transaction(
+    json['value'],
+    Contact(
+      0,
+      contactJson['name'],
+      contactJson['accountNumber'],
+    ),
+  );
 }
