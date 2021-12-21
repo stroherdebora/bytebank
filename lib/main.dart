@@ -20,7 +20,7 @@ class BytebankApp extends StatelessWidget {
           textTheme: ButtonTextTheme.primary,
         ),
       ),
-      home: TransactionAuthDialog(),
+      home: Dashboard(),
     );
   }
 }
