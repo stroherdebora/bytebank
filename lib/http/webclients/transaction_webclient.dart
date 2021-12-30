@@ -15,14 +15,14 @@ class TransactionWebClient {
   Future<Transaction> save(Transaction transaction, String password) async {
     final String transactionJson = jsonEncode(transaction.toJson());
 
-    final Response response = await client.post(Uri.http('192.168.13.122:8080', 'transactions'),
+    final Response? response = await client.post(Uri.http('192.168.13.122:8080', 'transactions'),
         headers: {
           'Content-type': 'application/json',
           'password': password,
         },
         body: transactionJson);
 
-    if (response.statusCode == 400) {
+    if (response!.statusCode == 400) {
       throw Exception('there was an error submiting transaction');
     }
 
