@@ -7,7 +7,7 @@ import 'package:bytebank/models/transaction.dart';
 
 class TransactionWebClient {
   Future<List<Transaction>> findAll() async {
-    final Response response = await client.get(Uri.http('192.168.13.12:8080', 'transactions'));
+    final Response response = await client.get(Uri.http('192.168.13.122:8080', 'transactions'));
 
     final List<dynamic> decodedJson = jsonDecode(response.body);
 
@@ -17,14 +17,16 @@ class TransactionWebClient {
   Future<Transaction?> save(Transaction transaction, String password) async {
     final String transactionJson = jsonEncode(transaction.toJson());
 
-    final Response? response = await client.post(Uri.http('192.168.13.12:8080', 'transactions'),
-        headers: {
-          'Content-type': 'application/json',
-          'password': password,
-        },
-        body: transactionJson);
+    final Response response = await client
+        .post(Uri.http('192.168.13.122:8080', 'transactions'),
+            headers: {
+              'Content-type': 'application/json',
+              'password': password,
+            },
+            body: transactionJson)
+        .timeout(Duration(seconds: 5));
 
-    if (response!.statusCode == 200) {
+    if (response.statusCode == 200) {
       return Transaction.fromJson(jsonDecode(response.body));
     }
 
