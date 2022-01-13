@@ -23,6 +23,8 @@ class _TransactionFormState extends State<TransactionForm> {
   final TransactionWebClient _webClient = TransactionWebClient();
   final String transactionId = Uuid().v4();
 
+  bool _sending = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +44,7 @@ class _TransactionFormState extends State<TransactionForm> {
                     message: 'Sending...',
                   ),
                 ),
-                visible: false,
+                visible: _sending,
               ),
               Text(
                 widget.contact.name,
@@ -114,13 +116,19 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   Future<Transaction> _send(Transaction transactionCreated, String password, BuildContext context) async {
+    setState(() {
+      _sending = true;
+    });
     final Transaction? transaction = await _webClient.save(transactionCreated, password).catchError((e) {
       _showFailureMessage(context, message: e.message);
-    }, test: (e) => e is TimeoutException).catchError((e) {
-      _showFailureMessage(context);
     }, test: (e) => e is HttpException).catchError((e) {
       _showFailureMessage(context, message: 'timeout submitting the transaction');
-    });
+    }, test: (e) => e is TimeoutException).catchError((e) {
+      _showFailureMessage(context);
+    }).whenComplete(() => setState(() {
+          _sending = false;
+        }));
+
     return transaction!;
   }
 
