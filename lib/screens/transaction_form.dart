@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bytebank/components/progress.dart';
 import 'package:bytebank/components/response_dialog.dart';
@@ -6,6 +7,7 @@ import 'package:bytebank/components/transaction_auth_dialog.dart';
 import 'package:bytebank/models/contact.dart';
 import 'package:bytebank/models/transaction.dart';
 import 'package:bytebank/http/webclients/transaction_webclient.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -118,11 +120,13 @@ class _TransactionFormState extends State<TransactionForm> {
   Future<Transaction> _send(Transaction transactionCreated, String password, BuildContext context) async {
     setState(() => _sending = true);
     final Transaction transaction = await _webClient.save(transactionCreated, password).catchError((e) {
-      print('Erro aqui: $e');
+      FirebaseCrashlytics.instance.recordError(e, null);
       _showFailureMessage(context, message: e.message);
     }, test: (e) => e is HttpException).catchError((e) {
+      FirebaseCrashlytics.instance.recordError(e, null);
       _showFailureMessage(context, message: 'timeout submitting the transaction');
-    }, test: (e) => e is TimeoutException).catchError((e) {
+    }, test: (e) => e is SocketException).catchError((e) {
+      FirebaseCrashlytics.instance.recordError(e, null);
       _showFailureMessage(context);
     }).whenComplete(() => setState(() => _sending = false));
     return transaction;
