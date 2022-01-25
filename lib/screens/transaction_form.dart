@@ -9,6 +9,7 @@ import 'package:bytebank/models/transaction.dart';
 import 'package:bytebank/http/webclients/transaction_webclient.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:uuid/uuid.dart';
 
 class TransactionForm extends StatefulWidget {
@@ -147,10 +148,28 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   void _showFailureMessage(BuildContext context, {String message = 'Unknow error'}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    showDialog(
+        context: context,
+        builder: (_) => FlareGiffyDialog(
+              flarePath: 'assets/space_demo.flr',
+              flareAnimation: 'loading',
+              title: Text(
+                'Space Reloading',
+                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
+              ),
+              description: Text(
+                'This is a space reloading dialog box. This library helps you easily create fancy flare dialog.',
+                textAlign: TextAlign.center,
+                style: TextStyle(),
+              ),
+              entryAnimation: EntryAnimation.DEFAULT,
+              onOkButtonPressed: () {},
+            ));
+
+    // final snackBar = SnackBar(
+    //   content: Text(message),
+    // );
+    // ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
     // showDialog(
     //     context: context,
