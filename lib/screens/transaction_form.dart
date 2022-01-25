@@ -105,71 +105,86 @@ class _TransactionFormState extends State<TransactionForm> {
     );
   }
 
-  void _save(Transaction transactionCreated, String password, BuildContext context) async {
-    Transaction transaction = await _send(transactionCreated, password, context);
-
+  void _save(
+    Transaction transactionCreated,
+    String password,
+    BuildContext context,
+  ) async {
+    Transaction transaction = await _send(
+      transactionCreated,
+      password,
+      context,
+    );
     _showSuccessfulMessage(transaction, context);
   }
 
   Future _showSuccessfulMessage(Transaction transaction, BuildContext context) async {
-    await showDialog(
-        context: context,
-        builder: (contextDialog) {
-          return SuccessDialog('successful transaction');
-        }).then((value) => Navigator.pop(context));
+    if (transaction != null) {
+      await showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return SuccessDialog('successful transaction');
+          });
+      Navigator.pop(context);
+    }
   }
 
   Future<Transaction> _send(Transaction transactionCreated, String password, BuildContext context) async {
-    setState(() => _sending = true);
+    setState(() {
+      _sending = true;
+    });
     final Transaction transaction = await _webClient.save(transactionCreated, password).catchError((e) {
       if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
-        FirebaseCrashlytics.instance.setCustomKey('exception', e.toString());
-        FirebaseCrashlytics.instance.setCustomKey('httpBody', transactionCreated.toString());
+        FirebaseCrashlytics.instance.setCustomKey('exeption', e.toString());
+        FirebaseCrashlytics.instance.setCustomKey('http_body', transactionCreated.toString());
         FirebaseCrashlytics.instance.recordError(e, null);
       }
       _showFailureMessage(context, message: e.message);
     }, test: (e) => e is HttpException).catchError((e) {
       if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
-        FirebaseCrashlytics.instance.setCustomKey('exception', e.toString());
-        FirebaseCrashlytics.instance.setCustomKey('http_code', e.statusCode());
+        FirebaseCrashlytics.instance.setCustomKey('exeption', e.toString());
+        FirebaseCrashlytics.instance.setCustomKey('http_code', e.statusCode);
         FirebaseCrashlytics.instance.setCustomKey('http_body', transactionCreated.toString());
         FirebaseCrashlytics.instance.recordError(e, null);
       }
       _showFailureMessage(context, message: 'timeout submitting the transaction');
     }, test: (e) => e is TimeoutException).catchError((e) {
       if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
-        FirebaseCrashlytics.instance.setCustomKey('exception', e.toString());
-        FirebaseCrashlytics.instance.setCustomKey('httpBody', transactionCreated.toString());
+        FirebaseCrashlytics.instance.setCustomKey('exeption', e.toString());
+        FirebaseCrashlytics.instance.setCustomKey('http_body', transactionCreated.toString());
         FirebaseCrashlytics.instance.recordError(e, null);
       }
+
       _showFailureMessage(context);
-    }).whenComplete(() => setState(() => _sending = false));
+    }).whenComplete(() {
+      setState(() {
+        _sending = false;
+      });
+    });
     return transaction;
   }
 
-  void _showFailureMessage(BuildContext context, {String message = 'Unknow error'}) {
+  void _showFailureMessage(
+    BuildContext context, {
+    String message = 'Unknown error',
+  }) {
+    // final snackBar = SnackBar(content: Text(message));
+    // _scaffoldKey.currentState.showSnackBar(snackBar);
+
+    // showToast(message, gravity: Toast.BOTTOM);
+
     showDialog(
         context: context,
-        builder: (_) => FlareGiffyDialog(
-              flarePath: 'assets/space_demo.flr',
-              flareAnimation: 'loading',
-              title: Text(
-                'Space Reloading',
-                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
-              ),
+        builder: (_) => NetworkGiffyDialog(
+              image: Image.asset('images/error.gif'),
+              title: Text('OPS', textAlign: TextAlign.center, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600)),
               description: Text(
-                'This is a space reloading dialog box. This library helps you easily create fancy flare dialog.',
+                message,
                 textAlign: TextAlign.center,
-                style: TextStyle(),
               ),
-              entryAnimation: EntryAnimation.DEFAULT,
+              entryAnimation: EntryAnimation.BOTTOM,
               onOkButtonPressed: () {},
             ));
-
-    // final snackBar = SnackBar(
-    //   content: Text(message),
-    // );
-    // ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
     // showDialog(
     //     context: context,
@@ -177,4 +192,8 @@ class _TransactionFormState extends State<TransactionForm> {
     //       return FailureDialog(message);
     //     });
   }
+
+  // void showToast(String msg, {int duration = 5, int gravity}) {
+  //   Toast.show(msg, context, duration: duration, gravity: gravity);
+  // }
 }
