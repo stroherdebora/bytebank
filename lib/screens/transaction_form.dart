@@ -9,6 +9,7 @@ import 'package:bytebank/models/transaction.dart';
 import 'package:bytebank/http/webclients/transaction_webclient.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:uuid/uuid.dart';
 
 class TransactionForm extends StatefulWidget {
@@ -24,12 +25,13 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _valueController = TextEditingController();
   final TransactionWebClient _webClient = TransactionWebClient();
   final String transactionId = Uuid().v4();
-
   bool _sending = false;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('New transaction'),
       ),
@@ -103,53 +105,95 @@ class _TransactionFormState extends State<TransactionForm> {
     );
   }
 
-  void _save(Transaction transactionCreated, String password, BuildContext context) async {
-    Transaction transaction = await _send(transactionCreated, password, context);
-
+  void _save(
+    Transaction transactionCreated,
+    String password,
+    BuildContext context,
+  ) async {
+    Transaction transaction = await _send(
+      transactionCreated,
+      password,
+      context,
+    );
     _showSuccessfulMessage(transaction, context);
   }
 
   Future _showSuccessfulMessage(Transaction transaction, BuildContext context) async {
-    await showDialog(
-        context: context,
-        builder: (contextDialog) {
-          return SuccessDialog('successful transaction');
-        }).then((value) => Navigator.pop(context));
+    if (transaction != null) {
+      await showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return SuccessDialog('successful transaction');
+          });
+      Navigator.pop(context);
+    }
   }
 
   Future<Transaction> _send(Transaction transactionCreated, String password, BuildContext context) async {
-    setState(() => _sending = true);
+    setState(() {
+      _sending = true;
+    });
     final Transaction transaction = await _webClient.save(transactionCreated, password).catchError((e) {
       if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
-        FirebaseCrashlytics.instance.setCustomKey('exception', e.toString());
-        FirebaseCrashlytics.instance.setCustomKey('httpBody', transactionCreated.toString());
+        FirebaseCrashlytics.instance.setCustomKey('exeption', e.toString());
+        FirebaseCrashlytics.instance.setCustomKey('http_body', transactionCreated.toString());
         FirebaseCrashlytics.instance.recordError(e, null);
       }
       _showFailureMessage(context, message: e.message);
     }, test: (e) => e is HttpException).catchError((e) {
       if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
-        FirebaseCrashlytics.instance.setCustomKey('exception', e.toString());
-        FirebaseCrashlytics.instance.setCustomKey('http_code', e.statusCode());
+        FirebaseCrashlytics.instance.setCustomKey('exeption', e.toString());
+        FirebaseCrashlytics.instance.setCustomKey('http_code', e.statusCode);
         FirebaseCrashlytics.instance.setCustomKey('http_body', transactionCreated.toString());
         FirebaseCrashlytics.instance.recordError(e, null);
       }
       _showFailureMessage(context, message: 'timeout submitting the transaction');
     }, test: (e) => e is TimeoutException).catchError((e) {
       if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
-        FirebaseCrashlytics.instance.setCustomKey('exception', e.toString());
-        FirebaseCrashlytics.instance.setCustomKey('httpBody', transactionCreated.toString());
+        FirebaseCrashlytics.instance.setCustomKey('exeption', e.toString());
+        FirebaseCrashlytics.instance.setCustomKey('http_body', transactionCreated.toString());
         FirebaseCrashlytics.instance.recordError(e, null);
       }
+
       _showFailureMessage(context);
-    }).whenComplete(() => setState(() => _sending = false));
+    }).whenComplete(() {
+      setState(() {
+        _sending = false;
+      });
+    });
     return transaction;
   }
 
-  void _showFailureMessage(BuildContext context, {String message = 'Unknow error'}) {
+  void _showFailureMessage(
+    BuildContext context, {
+    String message = 'Unknown error',
+  }) {
+    // final snackBar = SnackBar(content: Text(message));
+    // _scaffoldKey.currentState.showSnackBar(snackBar);
+
+    // showToast(message, gravity: Toast.BOTTOM);
+
     showDialog(
         context: context,
-        builder: (contextDialog) {
-          return FailureDialog(message);
-        });
+        builder: (_) => NetworkGiffyDialog(
+              image: Image.asset('images/error.gif'),
+              title: Text('OPS', textAlign: TextAlign.center, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600)),
+              description: Text(
+                message,
+                textAlign: TextAlign.center,
+              ),
+              entryAnimation: EntryAnimation.BOTTOM,
+              onOkButtonPressed: () {},
+            ));
+
+    // showDialog(
+    //     context: context,
+    //     builder: (contextDialog) {
+    //       return FailureDialog(message);
+    //     });
   }
+
+  // void showToast(String msg, {int duration = 5, int gravity}) {
+  //   Toast.show(msg, context, duration: duration, gravity: gravity);
+  // }
 }
