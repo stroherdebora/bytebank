@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 
 class Saldo extends ChangeNotifier {
-  final double value;
-  Saldo(
-    this.value,
-  );
+  double value;
+  Saldo(this.value);
+
+  void addValue(double value) {
+    this.value += value;
+  }
 
   @override
   String toString() {

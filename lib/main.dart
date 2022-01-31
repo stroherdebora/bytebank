@@ -23,7 +23,7 @@ void main() async {
 
   runZonedGuarded<Future<void>>(() async {
     runApp(ChangeNotifierProvider(
-      create: (context) => Saldo(0),
+      create: (context) => Saldo(20),
       child: BytebankApp(),
     ));
   }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));

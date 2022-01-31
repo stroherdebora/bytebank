@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BalanceCard extends StatelessWidget {
-  final Saldo balance;
-
-  const BalanceCard(this.balance);
-
   @override
   Widget build(BuildContext context) {
     return Card(
