@@ -1,5 +1,7 @@
+import 'package:bytebank/models/balance.dart';
 import 'package:bytebank/screens/dashboard/balance_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DashboardStates extends StatelessWidget {
   @override
@@ -8,9 +10,20 @@ class DashboardStates extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Bytebank'),
       ),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: BalanceCard(),
+      body: ListView(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: BalanceCard(),
+          ),
+          Consumer<Saldo>(builder: (context, value, child) {
+            return ElevatedButton(
+                onPressed: () {
+                  value.addValue(10);
+                },
+                child: Text('Adiciona'));
+          })
+        ],
       ),
     );
   }
