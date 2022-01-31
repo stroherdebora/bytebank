@@ -31,7 +31,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core:
   firebase_crashlytics: 
-  toast: 
+  toast:
+  provider:  
 
 dev_dependencies:
   flutter_test:
