@@ -19,7 +19,7 @@ class DashboardStates extends StatelessWidget {
           Consumer<Saldo>(builder: (context, value, child) {
             return ElevatedButton(
                 onPressed: () {
-                  value.addValue(10);
+                  value.subValue(10);
                 },
                 child: Text('Adiciona'));
           })
