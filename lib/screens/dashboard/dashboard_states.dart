@@ -1,5 +1,6 @@
 import 'package:bytebank/models/balance.dart';
 import 'package:bytebank/screens/dashboard/balance_card.dart';
+import 'package:bytebank/screens/deposit/formulario.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,9 +20,11 @@ class DashboardStates extends StatelessWidget {
           Consumer<Saldo>(builder: (context, value, child) {
             return ElevatedButton(
                 onPressed: () {
-                  value.subValue(10);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return FormularioDeposito();
+                  }));
                 },
-                child: Text('Adiciona'));
+                child: Text('Receber depósito'));
           })
         ],
       ),
