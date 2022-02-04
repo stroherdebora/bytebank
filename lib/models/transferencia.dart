@@ -1,6 +1,6 @@
 class Transferencia {
-  final String conta;
-  final String valor;
+  final int conta;
+  final double valor;
 
   Transferencia(
     this.valor,

@@ -4,12 +4,7 @@ import 'formulario.dart';
 
 const _tituloAppBar = 'Transferências';
 
-class ListaTransferencias extends StatefulWidget {
-  @override
-  _ListaTransferenciasState createState() => _ListaTransferenciasState();
-}
-
-class _ListaTransferenciasState extends State<ListaTransferencias> {
+class ListaTransferenciasState extends StatelessWidget {
   final List<Transferencia?> _transferencias = [];
 
   @override
@@ -30,18 +25,10 @@ class _ListaTransferenciasState extends State<ListaTransferencias> {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FormTransferencia();
-          })).then(
-            (transferenciaRecebida) => _atualiza(transferenciaRecebida),
-          );
+          }));
         },
       ),
     );
-  }
-
-  void _atualiza(Transferencia? transferenciaRecebida) {
-    if (transferenciaRecebida != null) {
-      setState(() => _transferencias.add(transferenciaRecebida));
-    }
   }
 }
 
