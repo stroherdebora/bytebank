@@ -1,5 +1,7 @@
 import 'package:bytebank/components/editor.dart';
+import 'package:bytebank/models/balance.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 const _titleAppBar = 'Receber depósito';
 const _dicaCampoValor = '0.00';
@@ -35,6 +37,22 @@ class FormularioDeposito extends StatelessWidget {
   }
 
   _criaDeposito(context) {
-    Navigator.pop(context);
+    final double? value = double.tryParse(_controladorCampoValor.text);
+    final depositoValido = _validaDeposito(value);
+
+    if (depositoValido) {
+      _atualizaEstado(context, value);
+      Navigator.pop(context);
+    }
+  }
+
+  _validaDeposito(value) {
+    final _campoPreenchido = value != null;
+
+    return _campoPreenchido;
+  }
+
+  _atualizaEstado(context, value) {
+    Provider.of<Saldo>(context, listen: false).addValue(value);
   }
 }
