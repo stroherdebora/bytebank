@@ -40,6 +40,9 @@ class FormTransferencia extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _criaTransferencia(context),
               child: Text('Confirmar'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.green,
+              ),
             ),
           ],
         ),
