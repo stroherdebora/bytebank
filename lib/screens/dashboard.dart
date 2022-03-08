@@ -1,4 +1,5 @@
 import 'package:bytebank/screens/contacts_list.dart';
+import 'package:bytebank/screens/dashboard/dashboard_states.dart';
 import 'package:bytebank/screens/transactions_list.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,11 @@ class Dashboard extends StatelessWidget {
                   Icons.description,
                   onClick: () => _showTransactionsList(context),
                 ),
+                _FeatureItem(
+                  'Transactions',
+                  Icons.description,
+                  onClick: () => _showDashboardStates(context),
+                ),
               ],
             ),
           ),
@@ -54,6 +60,12 @@ void _showContactsList(BuildContext context) {
 void _showTransactionsList(BuildContext context) {
   Navigator.of(context).push(
     MaterialPageRoute(builder: (context) => TransactionsList()),
+  );
+}
+
+void _showDashboardStates(BuildContext context) {
+  Navigator.of(context).push(
+    MaterialPageRoute(builder: (context) => DashboardStates()),
   );
 }
 
