@@ -32,7 +32,8 @@ dependencies:
   firebase_core:
   firebase_crashlytics: 
   toast:
-  provider:  
+  provider:
+  flutter_bloc:  
 
 dev_dependencies:
   flutter_test:
